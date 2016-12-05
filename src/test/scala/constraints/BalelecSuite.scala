@@ -199,6 +199,27 @@ class BalelecSuite extends FunSuite {
     })
   }
 
+  test("T5: make sure v2 cant pick t1 as he is needed for t2 t4") {
+
+    val res = schedule(List(v2, v3, v4), List(t1, t2, t4), Map(v2 -> List(t1, t2, t4), v3 -> List(t4), v4 -> List(t1)), 2)
+    assert(res != None)
+    res.foreach( m => {
+      assert(m(t1) === List(v4))
+      assert(m(t2) == List(v2))
+      assert(m(t4) === List(v2,v3))
+    })
+  }
+
+  test("T6: make sure if not enough people it doesn't work") {
+    val res = schedule(List(v3, v4), List(t1, t2, t4, t6), Map( v3 -> List(t4, t6), v4 -> List(t1, t6)), 6)
+    assert(res == None)
+  }
+
+  test("T7: make sure that even if v2 can do all 5, he can't as he also needs to do t1, t2, t3") {
+    val res = schedule(List(v3, v4), List(t1, t2, t3, t4, t6), Map(v2 -> List(t1,t2,t3,t4,t6), v3 -> List(t4, t6), v4 -> List(t4, t6)), 3)
+    assert(res == None)
+  }
+
   test("schedule returns None on an impossible problem") {
     val r1 = schedule(List(v1, v2), List(t1, t2), Map(v1 -> List(t1), v2 -> List(t1)), 1)
     assert(r1 === None)
