@@ -50,15 +50,15 @@ object Arithmetic {
     fir.reverse.zipAll(sec.reverse, false: Formula, false: Formula).reverse.unzip
 
   def lessEquals(n1: List[Formula], n2: List[Formula]): Formula = {
-    require((n1 != List()) && (n2 != List()))
-    def greaterThan(ls: List[(Formula, Formula)]): Formula = ls match {
+    require((n1 != List()) && (n2 != List()))                           //cannot run function on empty lists
+    def greaterThan(ls: List[(Formula, Formula)]): Formula = ls match { //wikipedia: digital comparator
       case (a, b) :: Nil => a && !b
       case (a, b) :: cs => (a && !b) || (!xor(a, b) && greaterThan(cs))
+      case _ => sys.error("Unexpected case")
     }
     val (first, second) = adaptLength(n1, n2)
     !greaterThan(first zip second)
-    //the second list is not less than the first list
-    //so the first list is less than or equal to the second
+    //if the second value is not greater than the first, then the first is less than/equal to the second value
   }
 
   /**

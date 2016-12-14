@@ -125,106 +125,10 @@ class BalelecSuite extends FunSuite {
     })
   }
 
-  test("T0: schedule volunteers to several tasks under max workload") {
-    val res = schedule(List(v1, v2), List(t1, t2, t4), Map(v1 -> List(t1, t4), v2 -> List(t2, t4)), 2)
-    assert(res != None)
-    res.foreach(m => {
-      assert(m(t1) === List(v1))
-      assert(m(t2) === List(v2))
-      assert(m(t4) === List(v1, v2))
-    })
-  }
-
-  test("T1: schedule volunteers to several tasks under max workload") {
-    val res = schedule(List(v1, v2, v3, v4), List(t1, t4, t6),
-      Map(
-        v1 -> List(t1, t6),
-        v2 -> List(t4),
-        v3 -> List(t4, t6),
-        v4 -> List(t6)), 2)
-    assert(res != None)
-    res.foreach(m => {
-      assert(m(t1) === List(v1))
-      assert(m(t4) === List(v2, v3))
-      assert(m(t6) === List(v1, v3, v4))
-    })
-  }
-
-  test("T2: no unnecessary volunteers for task") {
-    val res = schedule(List(v1, v2), List(t1), Map(v1 -> List(t1), v2 -> List(t1)), 2)
-    assert(res != None)
-    res.foreach(m => {
-      assert(m(t1) === List(v1) || m(t1) === List(v2))
-    })
-  }
-
-  test("T3: schedule volunteers to several tasks under max workload") {
-    val res = schedule(
-      List(v1, v2, v3, v4, v5, v6),
-      List(t1, t4, t6, t7),
-      Map(
-        v1 -> List(t6, t7),
-        v2 -> List(t6),
-        v3 -> List(t1, t4, t7),
-        v4 -> List(t6, t7),
-        v5 -> List(t7),
-        v6 -> List(t4)), 2)
-    assert(res != None)
-    res.foreach(m => {
-      assert(m(t1) === List(v3))
-      assert(m(t4) === List(v3, v6))
-      assert(m(t6) === List(v1, v2, v4))
-      assert(m(t7) === List(v1, v4, v5))
-    })
-  }
-
-  test("T4: schedule volunteers to several tasks under max workload") {
-    val res = schedule(
-      List(v1, v2, v3, v4, v6),
-      List(t1, t4, t6, t7),
-      Map(
-        v1 -> List(t6, t7),
-        v2 -> List(t1, t6, t7),
-        v3 -> List(t1, t4, t6, t7),
-        v4 -> List(t6, t7),
-        v6 -> List(t4)), 2)
-    assert(res != None)
-    res.foreach(m => {
-      assert(m(t1) === List(v3) || m(t1) === List(v2))
-      assert(m(t4) === List(v3, v6))
-      assert(m(t6) === List(v1, v2, v3) || m(t6) === List(v1, v2, v4) ||
-        m(t6) === List(v1, v3, v4) || m(t6) === List(v2, v3, v4))
-      assert(m(t7) === List(v1, v2, v3) || m(t7) === List(v1, v2, v4) ||
-        m(t7) === List(v1, v3, v4) || m(t7) === List(v2, v3, v4))
-    })
-  }
-
-  test("T5: make sure v2 cant pick t1 as he is needed for t2 t4") {
-
-    val res = schedule(List(v2, v3, v4), List(t1, t2, t4), Map(v2 -> List(t1, t2, t4), v3 -> List(t4), v4 -> List(t1)), 2)
-    assert(res != None)
-    res.foreach( m => {
-      assert(m(t1) === List(v4))
-      assert(m(t2) == List(v2))
-      assert(m(t4) === List(v2,v3))
-    })
-  }
-
-  test("T6: make sure if not enough people it doesn't work") {
-    val res = schedule(List(v3, v4), List(t1, t2, t4, t6), Map( v3 -> List(t4, t6), v4 -> List(t1, t6)), 6)
-    assert(res == None)
-  }
-
-  test("T7: make sure that even if v2 can do all 5, he can't as he also needs to do t1, t2, t3") {
-    val res = schedule(List(v3, v4), List(t1, t2, t3, t4, t6), Map(v2 -> List(t1,t2,t3,t4,t6), v3 -> List(t4, t6), v4 -> List(t4, t6)), 3)
-    assert(res == None)
-  }
-
   test("schedule returns None on an impossible problem") {
     val r1 = schedule(List(v1, v2), List(t1, t2), Map(v1 -> List(t1), v2 -> List(t1)), 1)
     assert(r1 === None)
   }
-
 
   def checkBalelecScheduling(
     solution: Map[Task, List[Volunteer]],

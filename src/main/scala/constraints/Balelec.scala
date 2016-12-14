@@ -55,7 +55,7 @@ object Balelec {
       * to make sure that the volunteer does not do any tasks he/she did not sign up for.
       */
 
-    val desirableTasks: List[Formula] =
+    val taskConstraints: List[Formula] =
       for (v <- volunteers) yield
         (tasks.filter(t => !availability(v).contains(t))).foldLeft[Formula](true)((acc, e) => acc && !propVariables(v, e))
 
@@ -66,7 +66,7 @@ object Balelec {
       tasks.map(t => atCapacity((for {v <- volunteers} yield propVariables(v, t)), t.capacity))
 
     val allConstraints: List[Formula] =
-      eachVolunteerWorkload ++ desirableTasks ++ eachTaskCompleted
+      eachVolunteerWorkload ++ taskConstraints ++ eachTaskCompleted
 
     val res = solveForSatisfiability(and(allConstraints:_*))
 
@@ -78,7 +78,10 @@ object Balelec {
     })
   }
 
-  //does this work
+  /**
+    * This function takes a list of constraints and returns a constraint
+    * that is true iff the "cap" number of them is true.
+    */
   private def atCapacity(ns: List[Formula], cap: Int): Formula = {
     val (r, c) = countPositiveBits(ns)
     lessEquals(r, int2binary(cap)) && lessEquals(int2binary(cap), r) && and(c.toSeq:_*)
